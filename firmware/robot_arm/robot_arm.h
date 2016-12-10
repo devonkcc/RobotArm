@@ -7,6 +7,7 @@
 
 #include "button.h"
 #include "motors.h"
+#include "encoder.h"
 
 #ifndef __ROBOT_ARM__
 #define __ROBOT_ARM__
@@ -35,21 +36,28 @@
 #define A_AUX A7
 
 // State Machine
-
-enum RobotArmState {
+enum top_level_state_machine {
   REMOTE,
   MANUAL,
   RECORD,
   PLAY,
+  PLAY_WAITING,
   NUM_ARM_STATES
 };
 
-RobotArmState st_robot_arm_state = REMOTE;
+top_level_state_machine robot_arm_state = REMOTE;
 
 // Buttons
+// Setup button_t structs (boolean argument is active low flag)
+button_t mode = button_t(MODE, false);
+button_t encoder_sw = button_t(ENCODER_SW, true);
 
-button_t mode;
-button_t encoder_sw;
+// Global Axix Poisitions
+counter_t shoulder_angle;
+counter_t base_angle;
+
+// Encoder
+encoder_t encoder = encoder_t(ENCODER_A, ENCODER_B);
 
 #endif __ROBOT_ARM__
 

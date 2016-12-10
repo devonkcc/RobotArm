@@ -6,8 +6,8 @@
 *----------------------------------------------------------------------------*/
 
 #include "robot_arm.h"
-#include "button.h"
-#include "motors.h"
+
+bool shoulder_active = true;
 
 void setup() {
   
@@ -16,10 +16,6 @@ void setup() {
   pinMode(ENCODER_B, INPUT);
   pinMode(ENCODER_SW, INPUT); // active low
   pinMode(MODE, INPUT);
-  
-  // Setup button_t structs (boolean argument is active low flag)
-  init_button(&mode, MODE, false);
-  init_button(&encoder_sw, ENCODER_SW, true);
   
   // Digital Outpus
   pinMode(DIR, OUTPUT);
@@ -36,24 +32,74 @@ void setup() {
   pinMode(HALL_SIGNAL, OUTPUT);
   pinMode(ENABLE, OUTPUT);
   
+  base_angle.circular = true;
+  encoder.counter = &shoulder_angle;
+  
   // Debug
   Serial.begin(9600);
 }
 
 void loop() {
-  update_button(&mode);
-  update_button(&encoder_sw);
+  mode.read();
+  encoder_sw.read();
+  encoder.read();
   
-  if(check_button_hold(&mode)) {
+  if(mode.check_button_hold()) {
     Serial.println("mode hold");
   }
-  if(check_button_click(&mode)) {
+  
+  if(mode.check_button_click()) {
     Serial.println("mode click");
+    encoder.enable = !encoder.enable;
+    if (encoder.enable)
+      Serial.println(" ------------ Encoder On ------------ ");
+    else
+      Serial.println(" ------------ Encoder Off ------------ ");
   }
-  if(check_button_hold(&encoder_sw)) {
+  
+  if(encoder_sw.check_button_hold()) {
     Serial.println("encoder hold");
   }
-  if(check_button_click(&encoder_sw)) {
-    Serial.println("encoder click");
+  
+  if(encoder_sw.check_button_click()) {
+    if (!shoulder_active) {
+      Serial.println(" ------------ Shoulder Counter ------------ ");
+      encoder.counter = &shoulder_angle;
+    }
+    else {
+      Serial.println(" ------------ Base Counter ------------ ");
+      encoder.counter = &base_angle;
+    }
+    shoulder_active = !shoulder_active;
   }
+  
+  if (shoulder_active)
+    Serial.println(shoulder_angle.count);
+  else
+    Serial.println(base_angle.count);
 }
+
+/*
+void loop() {
+  //
+  switch (robot_arm_state) {
+    case REMOTE:
+      statements
+      break;
+    case MANUAL:
+      <#statements#>
+      break;
+    case RECORD:
+      <#statements#>
+      break;
+    case PLAY:
+      <#statements#>
+      break;
+    case PLAY_WAITING:
+      <#statements#>
+      break;
+  }
+  // State transition
+  
+}
+*/

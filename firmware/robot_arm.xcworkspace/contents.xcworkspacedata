@@ -22,6 +22,12 @@
       <FileRef
          location = "group:motors.h">
       </FileRef>
+      <FileRef
+         location = "group:encoder.cpp">
+      </FileRef>
+      <FileRef
+         location = "group:encoder.h">
+      </FileRef>
    </Group>
    <Group
       location = "container:"

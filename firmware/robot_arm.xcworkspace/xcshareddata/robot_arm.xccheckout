@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>D2ED0C08-30C6-42F2-818B-BEC51E56406D</string>
+	<key>IDESourceControlProjectName</key>
+	<string>robot_arm</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>8EC89B809606590F8A0CC7B877D0D09E0E905B0E</key>
+		<string>https://github.com/devonkcc/robotarm.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>firmware/robot_arm.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>8EC89B809606590F8A0CC7B877D0D09E0E905B0E</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/devonkcc/robotarm.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>8EC89B809606590F8A0CC7B877D0D09E0E905B0E</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8EC89B809606590F8A0CC7B877D0D09E0E905B0E</string>
+			<key>IDESourceControlWCCName</key>
+			<string>robotArm</string>
+		</dict>
+	</array>
+</dict>
+</plist>
