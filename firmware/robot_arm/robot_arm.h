@@ -39,6 +39,8 @@
 #define NUM_MOTORS 5
 #define SMALL_SERVO_SPEED 0.005
 #define LARGE_SERVO_SPEED 0.005
+#define BELT_GEAR_RATIO 0.1551724138
+#define BASE_STEP_SIZE 0.279310344
 
 // State Machine
 enum top_level_state_machine {
@@ -90,8 +92,12 @@ servo_motor_t shoulder1 = servo_motor_t(SHOULDER_PWM1, &shoulder_servo1, 1, 0,
                                         LARGE_SERVO_SPEED);
 servo_motor_t shoulder2 = servo_motor_t(SHOULDER_PWM2, &shoulder_servo2, -1, 180,
                                         LARGE_SERVO_SPEED);
-//stepper_motor_t base;
+stepper_motor_t base = stepper_motor_t(DIR, STEP, ENABLE, 10, BASE_STEP_SIZE);
 
 #endif __ROBOT_ARM__
+
+
+
+
 
 

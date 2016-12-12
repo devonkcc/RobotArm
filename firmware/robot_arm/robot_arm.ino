@@ -8,6 +8,8 @@
 #include "robot_arm.h"
 
 int print_counter = 0;
+long time_stamp = 0;
+bool direction_bool = true;
 
 void setup() {
   
@@ -53,36 +55,51 @@ void setup() {
 }
 
 void loop() {
-  encoder.read();
-  encoder_sw.read();
-  if(encoder_sw.check_button_click()) {
-    curr_counter = (curr_counter+1)%NUM_MOTORS;
-    encoder.counter = counter_list[curr_counter];
-    Serial.print("---------- Counter # -----------");
-    Serial.println(curr_counter+1);
-  }
+//  encoder.read();
+//  encoder_sw.read();
+//  if(encoder_sw.check_button_click()) {
+//    curr_counter = (curr_counter+1)%NUM_MOTORS;
+//    encoder.counter = counter_list[curr_counter];
+//    Serial.print("---------- Counter # -----------");
+//    Serial.println(curr_counter+1);
+//  }
   
-  gripper.move_abs(gripper_angle.val);
-  wrist.move_abs(wrist_angle.val);
-  elbow.move_abs(elbow_angle.val);
-  shoulder1.move_abs(shoulder_angle.val);
-  shoulder2.move_abs(shoulder_angle.val);
-  //base.move_abs(base_angle->val);
+//  gripper.move_abs(gripper_angle.val);
+//  wrist.move_abs(wrist_angle.val);
+//  elbow.move_abs(elbow_angle.val);
+//  shoulder1.move_abs(shoulder_angle.val);
+//  shoulder2.move_abs(shoulder_angle.val);
   
-  if (print_counter > 20000){
-    Serial.print("G:");
-    Serial.print(gripper_angle.val);
-    Serial.print(" W:");
-    Serial.print(wrist_angle.val);
-    Serial.print(" E:");
-    Serial.print(elbow_angle.val);
-    Serial.print(" S:");
-    Serial.print(shoulder_angle.val);
-    Serial.print(" B:");
-    Serial.println(base_angle.val);
-    print_counter = 0;
-  }
-  print_counter++;
+//  if ((millis()-time_stamp) > 10000) {
+//    time_stamp = millis();
+//    if (direction_bool)
+//      base.move_abs(-45);
+//    else
+//      base.move_abs(45);
+//    direction_bool = !direction_bool;
+//  }
+  
+  base.move_abs(-45);
+  delay(10000);
+  base.move_abs(45);
+  delay(10000);
+  
+  
+//  
+//  if (print_counter > 20000){
+//    Serial.print("G:");
+//    Serial.print(gripper_angle.val);
+//    Serial.print(" W:");
+//    Serial.print(wrist_angle.val);
+//    Serial.print(" E:");
+//    Serial.print(elbow_angle.val);
+//    Serial.print(" S:");
+//    Serial.print(shoulder_angle.val);
+//    Serial.print(" B:");
+//    Serial.println(base_angle.val);
+//    print_counter = 0;
+//  }
+//  print_counter++;
 }
 
 /*
