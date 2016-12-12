@@ -19,21 +19,21 @@ encoder_t::encoder_t(int _ch_a, int _ch_b) {
 }
 
 void encoder_t::update_counter(float delta_counter) {
-  float new_counter_value = counter->count + delta_counter;
+  float new_counter_value = counter->val + delta_counter;
   if (new_counter_value > counter->upper_limit) {
     if (counter->circular)
-      counter->count = new_counter_value - counter->upper_limit;
+      counter->val = new_counter_value - counter->upper_limit;
     else
-      counter->count = counter->upper_limit;
+      counter->val = counter->upper_limit;
   }
   else if (new_counter_value < 0) {
     if (counter->circular)
-      counter->count = new_counter_value + counter->upper_limit;
+      counter->val = new_counter_value + counter->upper_limit;
     else
-      counter->count = 0;
+      counter->val = 0;
   }
   else {
-    counter->count = new_counter_value;
+    counter->val = new_counter_value;
   }
 }
 

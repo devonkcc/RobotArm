@@ -11,16 +11,16 @@
          location = "group:robot_arm.h">
       </FileRef>
       <FileRef
+         location = "group:motors.cpp">
+      </FileRef>
+      <FileRef
+         location = "group:motors.h">
+      </FileRef>
+      <FileRef
          location = "group:button.cpp">
       </FileRef>
       <FileRef
          location = "group:button.h">
-      </FileRef>
-      <FileRef
-         location = "group:motors.c">
-      </FileRef>
-      <FileRef
-         location = "group:motors.h">
       </FileRef>
       <FileRef
          location = "group:encoder.cpp">

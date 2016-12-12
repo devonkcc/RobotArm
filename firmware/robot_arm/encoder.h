@@ -12,10 +12,10 @@
 #define __ENCODER__
 
 typedef struct {
+  float val = 90;
   bool circular = false;
-  float count = 0;
   float step_size = 4.5;
-  float upper_limit = 360.0;
+  float upper_limit = 180;
 } counter_t;
 
 class encoder_t {
