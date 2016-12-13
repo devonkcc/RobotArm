@@ -37,14 +37,12 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "robot_arm/motors.cpp"
-            timestampString = "503202066.982384"
+            filePath = "robot_arm/robot_arm.h"
+            timestampString = "503300489.338104"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
-            landmarkName = "ISR(TIMER2_OVF_vect)"
-            landmarkType = "7">
+            startingLineNumber = "38"
+            endingLineNumber = "38">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

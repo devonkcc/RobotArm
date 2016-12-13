@@ -11,18 +11,39 @@
 #ifndef __MOTORS__
 #define __MOTORS__
 
+// Macros
+#define STEP_INTERRUPT_ON TIMSK2 |= (1 << OCIE2A)
+#define STEP_INTERRUPT_OFF TIMSK2 = 0
+
+// Constants
+#define SMALL_SERVO_SPEED 0.005
+#define LARGE_SERVO_SPEED 0.005
+#define BELT_GEAR_RATIO 0.1551724138
+#define BASE_STEP_SIZE 0.2793103448
+#define CLOCK_FREQUENCY 16000000 // 16MHz
+#define STEPS_PER_REVOLUTION 200
+#define TIMER2_PRESCALER 1024
+
+// Stepper global variables
+extern volatile bool timing_pin_state;
+extern volatile int steps_remaining;
+extern volatile bool stepper_dn;
+
 class stepper_motor_t {
-private:
-  float position; // degrees
-  int enable_pin;
-  int step_pin;
-  int dir_pin; // degrees / second
-  float speed;
-  long eta;
-  float step_size; // size of 1 step/microstep in degrees
-public:
-  stepper_motor_t(int _dir_pin, int _step_pin, int _en_pin, float _speed, float _step_stize);
-  long move_abs(float _position);
+  private:
+    float position; // degrees
+    bool clockwise;
+    int enable_pin;
+    int step_pin;
+    int dir_pin;
+  public:
+    float speed;
+  private:
+   int speed_to_ocr(float _speed); // _speed is in degrees/sec
+  public:
+    stepper_motor_t(int _dir_pin, int _step_pin, int _en_pin);
+    void move_abs(float _position);
+    void init_stepper_interrupt();
 };
 
 class servo_motor_t {
@@ -40,20 +61,5 @@ public:
   long move_abs(float _position);
   void init();
 };
-
-/*----------------------------------------------------------------------------
- Timing Interrrupt for Stepper
- *----------------------------------------------------------------------------*/
-
-extern unsigned long interrupt_period;
-extern volatile unsigned long interrupt_counter;
-extern volatile char overflowing;
-extern volatile unsigned int tcnt2;
-
-void setup_interrupt(unsigned long ms, void (*f)());
-void start();
-void stop();
-void overflow();
-
 
 #endif __MOTORS__

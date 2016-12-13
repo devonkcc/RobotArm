@@ -26,7 +26,7 @@
 #define GRIPPER_PWM 11
 #define GRIPPER_LED 12
 #define STAT 13
-#define D_AUX A0
+#define BASE_LED A0
 #define HALL_SIGNAL A1
 #define ENABLE A2
 #define MODE A3
@@ -37,10 +37,7 @@
 
 // Constants
 #define NUM_MOTORS 5
-#define SMALL_SERVO_SPEED 0.005
-#define LARGE_SERVO_SPEED 0.005
-#define BELT_GEAR_RATIO 0.1551724138
-#define BASE_STEP_SIZE 0.279310344
+#define DEFAULT_STEPPER_SPEED 140 // degrees/second
 
 // State Machine
 enum top_level_state_machine {
@@ -92,7 +89,12 @@ servo_motor_t shoulder1 = servo_motor_t(SHOULDER_PWM1, &shoulder_servo1, 1, 0,
                                         LARGE_SERVO_SPEED);
 servo_motor_t shoulder2 = servo_motor_t(SHOULDER_PWM2, &shoulder_servo2, -1, 180,
                                         LARGE_SERVO_SPEED);
-stepper_motor_t base = stepper_motor_t(DIR, STEP, ENABLE, 10, BASE_STEP_SIZE);
+stepper_motor_t base = stepper_motor_t(DIR, STEP, ENABLE);
+
+// Stepper global variables
+extern volatile bool timing_pin_state;
+extern volatile int steps_remaining;
+extern volatile bool stepper_dn;
 
 #endif __ROBOT_ARM__
 

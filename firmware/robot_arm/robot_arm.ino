@@ -7,11 +7,10 @@
 
 #include "robot_arm.h"
 
-int print_counter = 0;
-long time_stamp = 0;
-bool direction_bool = true;
-
 void setup() {
+  
+  // Debug
+  //Serial.begin(9600);
   
   // Digital Inputs
   pinMode(ENCODER_A, INPUT);
@@ -22,6 +21,8 @@ void setup() {
   // Digital Outpus
   pinMode(DIR, OUTPUT);
   pinMode(STEP, OUTPUT);
+  pinMode(BASE_LED, OUTPUT);
+  digitalWrite(A0, HIGH);
   pinMode(SHOULDER_PWM1, OUTPUT);
   pinMode(SHOULDER_PWM2, OUTPUT);
   pinMode(UPPER_LED, OUTPUT);
@@ -43,15 +44,15 @@ void setup() {
   encoder.counter = counter_list[curr_counter];
   encoder.enable = true;
   
-  // Initialize motors
+  // Initialize servo motors
   gripper.init();
   wrist.init();
   elbow.init();
   shoulder1.init();
   shoulder2.init();
   
-  // Debug
-  Serial.begin(9600);
+  // Setup stepper motor
+  digitalWrite(ENABLE, LOW);
 }
 
 void loop() {
@@ -79,10 +80,14 @@ void loop() {
 //    direction_bool = !direction_bool;
 //  }
   
-  base.move_abs(-45);
-  delay(10000);
-  base.move_abs(45);
-  delay(10000);
+  base.move_abs(90);
+  delay(500);
+  digitalWrite(STAT, HIGH);
+  base.move_abs(-90);
+  while(true);
+//
+//  base.move_abs(45);
+//  delay(1500);
   
   
 //  
@@ -101,6 +106,26 @@ void loop() {
 //  }
 //  print_counter++;
 }
+
+/*----------------------------------------------------------------------------
+ ISR
+ *----------------------------------------------------------------------------*/
+
+ISR(TIMER2_COMPA_vect){
+  // Check if movement complete
+  if (!steps_remaining) {
+    // Turn interrupt off
+    STEP_INTERRUPT_OFF;
+    stepper_dn = true;
+  }
+  else {
+    // Toggle the interrupt pin
+    digitalWrite(STEP, LOW);
+    steps_remaining--;
+    digitalWrite(STEP, HIGH);
+  }
+}
+
 
 /*
 void loop() {
