@@ -8,6 +8,7 @@
 #include "button.h"
 #include "motors.h"
 #include "encoder.h"
+#include "led.h"
 
 #ifndef __ROBOT_ARM__
 #define __ROBOT_ARM__
@@ -37,6 +38,9 @@
 
 // Constants
 #define NUM_MOTORS 5
+#define NUM_ARM_STATES 5
+#define NUM_LEDS 6 // 1 virtual LED
+#define NUM_AXIS_LEDS 5
 #define DEFAULT_STEPPER_SPEED 140 // degrees/second
 #define MAX_BASE_ROTATION 720
 
@@ -49,16 +53,29 @@
 // State Machine
 enum top_level_state_machine {
   REMOTE,
-  MANUAL,
+  KNOB,
   RECORD,
   PLAY,
-  PLAY_WAITING,
-  NUM_ARM_STATES
+  PLAY_WAITING
 };
 
 top_level_state_machine robot_arm_state = REMOTE;
 
-// Buttons
+// LED Objects
+led_t stat_led = led_t(STAT, true);
+led_t gripper_led = led_t(GRIPPER_LED, true);
+led_t forearm_led = led_t(FOREARM_LED, true);
+led_t upper_arm_led = led_t(UPPER_LED, true);
+led_t base_led = led_t(BASE_LED, false);
+
+// Non axis LEDs must be stored at the end of the led_list
+// There are two gripper LEDs on pupose because the gripper_led is solid when
+//  the wrist is moving and flashing for the gripper. A double entry in the list
+//  allows 1 to 1 correspondence between the led_list and the counter_list;
+led_t* led_list[NUM_LEDS] = {&gripper_led, &gripper_led, &forearm_led,
+                             &upper_arm_led, &base_led, &stat_led};
+
+// Buttons Objects
 // Setup button_t structs (boolean argument is active low flag)
 button_t mode = button_t(MODE, false);
 button_t encoder_sw = button_t(ENCODER_SW, true);

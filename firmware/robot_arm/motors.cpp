@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
- * Name:        file_name.c
+ * Name:        motors.cpp
  * Description: Short description
  * Note(s):     Definitions and information
  *

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
- * Name:        file_name.h
+ * Name:        motors.h
  * Description: Short description
  * Note(s):     Definitions and information
  *

@@ -7,16 +7,38 @@
 
 #include "robot_arm.h"
 
-#undef DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 int print_counter = 0;
 #endif
 
+void write_all_leds(int _state) {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    (*led_list[i]).set_state(_state);
+  }
+}
+
+void update_all_leds() {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    (*led_list[i]).update();
+  }
+}
+
+void write_all_axis_leds(int _state) {
+  for (int i = 0; i < NUM_AXIS_LEDS; i++) {
+    (*led_list[i]).set_state(_state);
+    if (_state == FLASH_ON) {
+      (*led_list[i]).set_flashes(1);
+    }
+  }
+}
+
 void setup() {
   
-  // Debug
+  #ifdef DEBUG
   Serial.begin(9600);
+  #endif
   
   // Digital Inputs
   pinMode(ENCODER_A, INPUT);
@@ -69,16 +91,72 @@ void setup() {
   
   // Enable stepper motor
   digitalWrite(ENABLE, LOW);
+  
+  // Initialize stat LED
+  stat_led.set_state(FLASH_ON);
 }
 
 void loop() {
+  // Collect data
   encoder.read();
   encoder_sw.read();
-  if(encoder_sw.check_button_click()) {
+  mode.read();
+  
+  // Display state on stat LED
+  stat_led.set_flashes(robot_arm_state+1);
+  
+  // State machine
+  switch (robot_arm_state) {
+    case REMOTE:
+      encoder.enable = false;
+      write_all_axis_leds(SOLID);
+      break;
+    case KNOB:
+      encoder.enable = true;
+      break;
+    case RECORD:
+      encoder.enable = true;
+      break;
+    case PLAY:
+      write_all_axis_leds(SOLID);
+      encoder.enable = false;
+      break;
+    case PLAY_WAITING:
+      write_all_axis_leds(FLASH_ON);
+      encoder.enable = false;
+      break;
+  }
+  
+  // State Transitions
+  if (mode.check_button_click()) {
+    robot_arm_state = static_cast<top_level_state_machine>
+                      ((int(robot_arm_state)+1)%NUM_ARM_STATES);
+  }
+  
+  // Check for swap axis
+  if (encoder.enable && encoder_sw.check_button_click()) {
     curr_counter = (curr_counter+1)%NUM_MOTORS;
     encoder.counter = counter_list[curr_counter];
   }
   
+  // Turn on axis LED
+  if (encoder.enable) {
+    // Set curr axis LED to solid except for gripper (counter 0)
+    for (int i = 0; i < NUM_AXIS_LEDS; i++) {
+      if (i != curr_counter && !(i == 1 && curr_counter == 0)) {
+        (*led_list[i]).set_state(OFF);
+      }
+    }
+    if (curr_counter == 0) {
+      (*led_list[curr_counter]).set_flashes(2);
+      (*led_list[curr_counter]).set_state(FLASH_ON);
+    }
+    else {
+      (*led_list[curr_counter]).set_state(SOLID);
+    }
+  }
+  
+  // Write to motors
   gripper.move_abs(gripper_angle.val);
   wrist.move_abs(wrist_angle.val);
   elbow.move_abs(elbow_angle.val);
@@ -87,9 +165,15 @@ void loop() {
   if(stepper_dn)
     base.move_abs(base_angle.val);
   
-#ifdef DEBUG
+  // Write to LEDs
+  update_all_leds();
+  
+  // Debug
+  #ifdef DEBUG
   if (print_counter > 20000){
-    Serial.print("G:");
+    Serial.print("State:");
+    Serial.print(robot_arm_state);
+    Serial.print(" G:");
     Serial.print(gripper_angle.val);
     Serial.print(" W:");
     Serial.print(wrist_angle.val);
@@ -102,34 +186,8 @@ void loop() {
     print_counter = 0;
   }
   print_counter++;
-#endif
+  #endif
 }
-
-
-/*
-void loop() {
-  //
-  switch (robot_arm_state) {
-    case REMOTE:
-      statements
-      break;
-    case MANUAL:
-      <#statements#>
-      break;
-    case RECORD:
-      <#statements#>
-      break;
-    case PLAY:
-      <#statements#>
-      break;
-    case PLAY_WAITING:
-      <#statements#>
-      break;
-  }
-  // State transition
-  
-}
-*/
 
 //mode.read();
 //encoder_sw.read();

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
- * Name:        encoder.c
+ * Name:        encoder.cpp
  * Description: Data structure to manage the encoder
  * Note(s):     Requires semaphores to be added if used with threading
  *

@@ -28,6 +28,12 @@
       <FileRef
          location = "group:encoder.h">
       </FileRef>
+      <FileRef
+         location = "group:led.cpp">
+      </FileRef>
+      <FileRef
+         location = "group:led.h">
+      </FileRef>
    </Group>
    <Group
       location = "container:"

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
- * Name:        button.c
+ * Name:        button.cpp
  * Description: Data structure to manage button style inputs
  * Note(s):     Requires semaphores to be added if used with threading
  *
