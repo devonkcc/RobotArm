@@ -38,6 +38,13 @@
 // Constants
 #define NUM_MOTORS 5
 #define DEFAULT_STEPPER_SPEED 140 // degrees/second
+#define MAX_BASE_ROTATION 720
+
+// Startup servo positions
+#define GRIPPER_STARTUP_POS 144
+#define WRIST_STARTUP_POS 5
+#define ELBOW_STARTUP_POS 180
+#define SHOULDER_STARTUP_POS 135
 
 // State Machine
 enum top_level_state_machine {
@@ -90,11 +97,6 @@ servo_motor_t shoulder1 = servo_motor_t(SHOULDER_PWM1, &shoulder_servo1, 1, 0,
 servo_motor_t shoulder2 = servo_motor_t(SHOULDER_PWM2, &shoulder_servo2, -1, 180,
                                         LARGE_SERVO_SPEED);
 stepper_motor_t base = stepper_motor_t(DIR, STEP, ENABLE);
-
-// Stepper global variables
-extern volatile bool timing_pin_state;
-extern volatile int steps_remaining;
-extern volatile bool stepper_dn;
 
 #endif __ROBOT_ARM__
 

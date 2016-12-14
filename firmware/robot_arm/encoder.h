@@ -14,7 +14,7 @@
 typedef struct {
   float val = 90;
   bool circular = false;
-  float step_size = 4.5;
+  float step_size = 1;
   float upper_limit = 180;
 } counter_t;
 

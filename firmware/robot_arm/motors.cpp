@@ -7,12 +7,31 @@
 
 #include "motors.h"
 
-#define STEP 4
+#define INTERRUP_TOGGLE 4
 
 // Stepper global variables
 extern volatile bool timing_pin_state = false;
 extern volatile int steps_remaining  = 0;
 extern volatile bool stepper_dn = true;
+
+/*----------------------------------------------------------------------------
+ ISR
+ *----------------------------------------------------------------------------*/
+
+ISR(TIMER2_COMPA_vect){
+  // Check if movement complete
+  if (!steps_remaining) {
+    // Turn interrupt off
+    STEP_INTERRUPT_OFF;
+    stepper_dn = true;
+  }
+  else {
+    // Toggle the interrupt pin
+    digitalWrite(INTERRUP_TOGGLE, LOW);
+    steps_remaining--;
+    digitalWrite(INTERRUP_TOGGLE, HIGH);
+  }
+}
 
 /*----------------------------------------------------------------------------
  Stepper Class
@@ -39,6 +58,9 @@ void stepper_motor_t::init_stepper_interrupt() {
   TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20); // Set 1023 prescaler
 }
 
+void stepper_motor_t::set_position(float _position) {
+  position = _position;
+}
 
 int stepper_motor_t::speed_to_ocr(float _speed) {
   return abs(int(BASE_STEP_SIZE*(CLOCK_FREQUENCY/TIMER2_PRESCALER)/_speed));
@@ -50,7 +72,7 @@ void stepper_motor_t::move_abs(float _position) {
   float delta_position = _position - position;
   position = _position;
   // Add delta stpes
-  steps_remaining += int(delta_position/BASE_STEP_SIZE);
+  steps_remaining += int(delta_position/BASE_STEP_SIZE)*((clockwise)?-1:1);
   if (steps_remaining < 0) {
     //Reverse direction
     clockwise = !clockwise;

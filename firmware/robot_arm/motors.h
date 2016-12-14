@@ -44,6 +44,7 @@ class stepper_motor_t {
     stepper_motor_t(int _dir_pin, int _step_pin, int _en_pin);
     void move_abs(float _position);
     void init_stepper_interrupt();
+    void set_position(float _position);
 };
 
 class servo_motor_t {

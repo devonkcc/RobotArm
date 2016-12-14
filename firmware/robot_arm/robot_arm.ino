@@ -7,10 +7,16 @@
 
 #include "robot_arm.h"
 
+#undef DEBUG
+
+#ifdef DEBUG
+int print_counter = 0;
+#endif
+
 void setup() {
   
   // Debug
-  //Serial.begin(9600);
+  Serial.begin(9600);
   
   // Digital Inputs
   pinMode(ENCODER_A, INPUT);
@@ -38,7 +44,14 @@ void setup() {
   // Configure base counter
   base_angle.circular = true;
   base_angle.step_size = 1;
-  base_angle.upper_limit = 360;
+  base_angle.val = MAX_BASE_ROTATION/2;
+  base_angle.upper_limit = MAX_BASE_ROTATION;
+
+  // Configure startup servo positions
+  gripper_angle.val = GRIPPER_STARTUP_POS;
+  wrist_angle.val = WRIST_STARTUP_POS;
+  elbow_angle.val = ELBOW_STARTUP_POS;
+  shoulder_angle.val = SHOULDER_STARTUP_POS;
   
   // Initialize default encoder counter
   encoder.counter = counter_list[curr_counter];
@@ -51,79 +64,45 @@ void setup() {
   shoulder1.init();
   shoulder2.init();
   
-  // Setup stepper motor
+  // Setup servo position
+  base.set_position(MAX_BASE_ROTATION/2);
+  
+  // Enable stepper motor
   digitalWrite(ENABLE, LOW);
 }
 
 void loop() {
-//  encoder.read();
-//  encoder_sw.read();
-//  if(encoder_sw.check_button_click()) {
-//    curr_counter = (curr_counter+1)%NUM_MOTORS;
-//    encoder.counter = counter_list[curr_counter];
-//    Serial.print("---------- Counter # -----------");
-//    Serial.println(curr_counter+1);
-//  }
-  
-//  gripper.move_abs(gripper_angle.val);
-//  wrist.move_abs(wrist_angle.val);
-//  elbow.move_abs(elbow_angle.val);
-//  shoulder1.move_abs(shoulder_angle.val);
-//  shoulder2.move_abs(shoulder_angle.val);
-  
-//  if ((millis()-time_stamp) > 10000) {
-//    time_stamp = millis();
-//    if (direction_bool)
-//      base.move_abs(-45);
-//    else
-//      base.move_abs(45);
-//    direction_bool = !direction_bool;
-//  }
-  
-  base.move_abs(90);
-  delay(500);
-  digitalWrite(STAT, HIGH);
-  base.move_abs(-90);
-  while(true);
-//
-//  base.move_abs(45);
-//  delay(1500);
-  
-  
-//  
-//  if (print_counter > 20000){
-//    Serial.print("G:");
-//    Serial.print(gripper_angle.val);
-//    Serial.print(" W:");
-//    Serial.print(wrist_angle.val);
-//    Serial.print(" E:");
-//    Serial.print(elbow_angle.val);
-//    Serial.print(" S:");
-//    Serial.print(shoulder_angle.val);
-//    Serial.print(" B:");
-//    Serial.println(base_angle.val);
-//    print_counter = 0;
-//  }
-//  print_counter++;
-}
-
-/*----------------------------------------------------------------------------
- ISR
- *----------------------------------------------------------------------------*/
-
-ISR(TIMER2_COMPA_vect){
-  // Check if movement complete
-  if (!steps_remaining) {
-    // Turn interrupt off
-    STEP_INTERRUPT_OFF;
-    stepper_dn = true;
+  encoder.read();
+  encoder_sw.read();
+  if(encoder_sw.check_button_click()) {
+    curr_counter = (curr_counter+1)%NUM_MOTORS;
+    encoder.counter = counter_list[curr_counter];
   }
-  else {
-    // Toggle the interrupt pin
-    digitalWrite(STEP, LOW);
-    steps_remaining--;
-    digitalWrite(STEP, HIGH);
+  
+  gripper.move_abs(gripper_angle.val);
+  wrist.move_abs(wrist_angle.val);
+  elbow.move_abs(elbow_angle.val);
+  shoulder1.move_abs(shoulder_angle.val);
+  shoulder2.move_abs(shoulder_angle.val);
+  if(stepper_dn)
+    base.move_abs(base_angle.val);
+  
+#ifdef DEBUG
+  if (print_counter > 20000){
+    Serial.print("G:");
+    Serial.print(gripper_angle.val);
+    Serial.print(" W:");
+    Serial.print(wrist_angle.val);
+    Serial.print(" E:");
+    Serial.print(elbow_angle.val);
+    Serial.print(" S:");
+    Serial.print(shoulder_angle.val);
+    Serial.print(" B:");
+    Serial.println(base_angle.val);
+    print_counter = 0;
   }
+  print_counter++;
+#endif
 }
 
 
