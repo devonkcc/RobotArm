@@ -9,6 +9,7 @@
 #include "motors.h"
 #include "encoder.h"
 #include "led.h"
+#include "position_list.h"
 
 #ifndef __ROBOT_ARM__
 #define __ROBOT_ARM__
@@ -38,7 +39,7 @@
 
 // Constants
 #define NUM_MOTORS 5
-#define NUM_ARM_STATES 5
+#define NUM_ARM_STATES 4
 #define NUM_LEDS 6 // 1 virtual LED
 #define NUM_AXIS_LEDS 5
 #define DEFAULT_STEPPER_SPEED 140 // degrees/second
@@ -55,8 +56,7 @@ enum top_level_state_machine {
   REMOTE,
   KNOB,
   RECORD,
-  PLAY,
-  PLAY_WAITING
+  PLAY
 };
 
 top_level_state_machine robot_arm_state = REMOTE;
@@ -114,6 +114,17 @@ servo_motor_t shoulder1 = servo_motor_t(SHOULDER_PWM1, &shoulder_servo1, 1, 0,
 servo_motor_t shoulder2 = servo_motor_t(SHOULDER_PWM2, &shoulder_servo2, -1, 180,
                                         LARGE_SERVO_SPEED);
 stepper_motor_t base = stepper_motor_t(DIR, STEP, ENABLE);
+
+servo_motor_t* servo_list[5] = {&gripper, &wrist, &elbow, &shoulder1, &shoulder2};
+
+// Write to motors flag
+bool write_to_motors = false; 
+
+// Record toolpath
+position_list_t toolpath = position_list_t();
+int target_coordiante = 0;
+long max_servo_eta = 0;
+bool cycle_start = false; 
 
 #endif __ROBOT_ARM__
 

@@ -34,6 +34,12 @@
       <FileRef
          location = "group:led.h">
       </FileRef>
+      <FileRef
+         location = "group:position_list.cpp">
+      </FileRef>
+      <FileRef
+         location = "group:position_list.h">
+      </FileRef>
    </Group>
    <Group
       location = "container:"

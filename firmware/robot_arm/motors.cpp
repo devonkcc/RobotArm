@@ -106,7 +106,7 @@ void servo_motor_t::init() {
 
 long servo_motor_t::move_abs(float _position) {
   (*servo_object).write((_position - offset)*polarity);
-  eta = millis() + abs(position - _position)/speed;
+  eta = millis() + abs(position - _position)/LARGE_SERVO_SPEED;
   position = _position;
   return eta;
 }

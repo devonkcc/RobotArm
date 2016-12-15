@@ -110,20 +110,53 @@ void loop() {
     case REMOTE:
       encoder.enable = false;
       write_all_axis_leds(SOLID);
+      write_to_motors = true;
       break;
     case KNOB:
+      write_to_motors = true;
       encoder.enable = true;
       break;
     case RECORD:
+      write_to_motors = true;
       encoder.enable = true;
+      if (encoder_sw.check_button_hold()) {
+        coordinate_t new_coordinate;
+        new_coordinate.gripper_pos = gripper_angle.val;
+        new_coordinate.wrist_pos = wrist_angle.val;
+        new_coordinate.elbow_pos = elbow_angle.val;
+        new_coordinate.shoulder_pos = shoulder_angle.val;
+        new_coordinate.base_pos = base_angle.val;
+        toolpath.insert_back(new_coordinate);
+        Serial.println("coordinate logged");
+      }
+      else if (mode.check_button_hold()) {
+        toolpath.clear();
+        Serial.println("toolpath cleared");
+      }
       break;
     case PLAY:
-      write_all_axis_leds(SOLID);
-      encoder.enable = false;
-      break;
-    case PLAY_WAITING:
       write_all_axis_leds(FLASH_ON);
       encoder.enable = false;
+      if (encoder_sw.check_button_click()) cycle_start = true;
+      if (cycle_start) {
+        write_all_axis_leds(SOLID);
+        if ((millis() > max_servo_eta) && stepper_dn) {
+          coordinate_t target = toolpath.get_coord(target_coordiante);
+          gripper_angle.val = target.gripper_pos;
+          wrist_angle.val = target.wrist_pos;
+          elbow_angle.val = target.elbow_pos;
+          shoulder_angle.val = target.shoulder_pos;
+          base_angle.val = target.base_pos;
+          write_to_motors = true;
+          target_coordiante++;
+          Serial.println("go");
+        }
+        if (target_coordiante == toolpath.size()) {
+          cycle_start = false;
+          target_coordiante = 0;
+          Serial.println("toolpath complete");
+        }
+      }
       break;
   }
   
@@ -156,14 +189,18 @@ void loop() {
     }
   }
   
-  // Write to motors
-  gripper.move_abs(gripper_angle.val);
-  wrist.move_abs(wrist_angle.val);
-  elbow.move_abs(elbow_angle.val);
-  shoulder1.move_abs(shoulder_angle.val);
-  shoulder2.move_abs(shoulder_angle.val);
-  if(stepper_dn)
-    base.move_abs(base_angle.val);
+  if (write_to_motors) {
+    // Write to motors
+    gripper.move_abs(gripper_angle.val);
+    wrist.move_abs(wrist_angle.val);
+    elbow.move_abs(elbow_angle.val);
+    shoulder1.move_abs(shoulder_angle.val);
+    shoulder2.move_abs(shoulder_angle.val);
+    max_servo_eta = millis() + 400;
+    if(stepper_dn)
+      base.move_abs(base_angle.val);
+    write_to_motors = false;
+  }
   
   // Write to LEDs
   update_all_leds();

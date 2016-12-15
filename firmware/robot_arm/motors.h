@@ -16,8 +16,8 @@
 #define STEP_INTERRUPT_OFF TIMSK2 = 0
 
 // Constants
-#define SMALL_SERVO_SPEED 0.005
-#define LARGE_SERVO_SPEED 0.005
+#define SMALL_SERVO_SPEED 0.001
+#define LARGE_SERVO_SPEED 0.001
 #define BELT_GEAR_RATIO 0.1551724138
 #define BASE_STEP_SIZE 0.2793103448
 #define CLOCK_FREQUENCY 16000000 // 16MHz
@@ -55,8 +55,8 @@ private:
   int polarity;
   int pin;
   float speed; // degrees per millisecond
-  long eta;
 public:
+  long eta;
   servo_motor_t(int _pin, Servo* _servo_object, int _polarity, float _offset,
                 float _speed);
   long move_abs(float _position);
