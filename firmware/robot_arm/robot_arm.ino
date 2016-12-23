@@ -34,6 +34,22 @@ void write_all_axis_leds(int _state) {
   }
 }
 
+void show_active_axis_led() {
+  // Set curr axis LED to solid except for gripper (counter 0)
+  for (int i = 0; i < NUM_AXIS_LEDS; i++) {
+    if (i != curr_counter && !(i == 1 && curr_counter == 0)) {
+      (*led_list[i]).set_state(OFF);
+    }
+  }
+  if (curr_counter == 0) { // If curr_counter is gripper
+    (*led_list[curr_counter]).set_flashes(2);
+    (*led_list[curr_counter]).set_state(FLASH_ON);
+  }
+  else { // If curr_counter is not gripper
+    (*led_list[curr_counter]).set_state(SOLID);
+  }
+}
+
 void setup() {
   
   #ifdef DEBUG
@@ -116,10 +132,13 @@ void loop() {
     case KNOB:
       write_to_motors = true;
       encoder.enable = true;
-      break;
-    case RECORD:
-      write_to_motors = true;
-      encoder.enable = true;
+      // Check for swap axis
+      if (encoder_sw.check_button_click()) {
+        curr_counter = (curr_counter+1)%NUM_MOTORS;
+        encoder.counter = counter_list[curr_counter];
+        show_active_axis_led();
+      }
+      // Check for log position
       if (encoder_sw.check_button_hold()) {
         coordinate_t new_coordinate;
         new_coordinate.gripper_pos = gripper_angle.val;
@@ -128,17 +147,21 @@ void loop() {
         new_coordinate.shoulder_pos = shoulder_angle.val;
         new_coordinate.base_pos = base_angle.val;
         toolpath.insert_back(new_coordinate);
+        #ifdef DEBUG
         Serial.println("coordinate logged");
+        #endif
       }
       else if (mode.check_button_hold()) {
         toolpath.clear();
+        #ifdef DEBUG
         Serial.println("toolpath cleared");
+        #endif
       }
       break;
     case PLAY:
-      write_all_axis_leds(FLASH_ON);
-      encoder.enable = false;
+      // Check for cycle start
       if (encoder_sw.check_button_click()) cycle_start = true;
+      // Start toolpath
       if (cycle_start) {
         write_all_axis_leds(SOLID);
         if ((millis() > max_servo_eta) && stepper_dn) {
@@ -150,12 +173,16 @@ void loop() {
           base_angle.val = target.base_pos;
           write_to_motors = true;
           target_coordiante++;
-          Serial.println("go");
+          #ifdef DEBUG
+          Serial.println("moving to target");
+          #endif
         }
         if (target_coordiante == toolpath.size()) {
           cycle_start = false;
           target_coordiante = 0;
+          #ifdef DEBUG
           Serial.println("toolpath complete");
+          #endif
         }
       }
       break;
@@ -165,33 +192,24 @@ void loop() {
   if (mode.check_button_click()) {
     robot_arm_state = static_cast<top_level_state_machine>
                       ((int(robot_arm_state)+1)%NUM_ARM_STATES);
-  }
-  
-  // Check for swap axis
-  if (encoder.enable && encoder_sw.check_button_click()) {
-    curr_counter = (curr_counter+1)%NUM_MOTORS;
-    encoder.counter = counter_list[curr_counter];
-  }
-  
-  // Turn on axis LED
-  if (encoder.enable) {
-    // Set curr axis LED to solid except for gripper (counter 0)
-    for (int i = 0; i < NUM_AXIS_LEDS; i++) {
-      if (i != curr_counter && !(i == 1 && curr_counter == 0)) {
-        (*led_list[i]).set_state(OFF);
-      }
-    }
-    if (curr_counter == 0) {
-      (*led_list[curr_counter]).set_flashes(2);
-      (*led_list[curr_counter]).set_state(FLASH_ON);
-    }
-    else {
-      (*led_list[curr_counter]).set_state(SOLID);
+    switch (robot_arm_state) {
+      case REMOTE:
+        encoder.enable = false;
+        write_all_axis_leds(SOLID);
+        break;
+      case KNOB:
+        encoder.enable = true;
+        show_active_axis_led();
+        break;
+      case PLAY:
+        write_all_axis_leds(FLASH_ON);
+        encoder.enable = false;
+        break;
     }
   }
   
+  // Write to motors
   if (write_to_motors) {
-    // Write to motors
     gripper.move_abs(gripper_angle.val);
     wrist.move_abs(wrist_angle.val);
     elbow.move_abs(elbow_angle.val);
@@ -226,41 +244,3 @@ void loop() {
   print_counter++;
   #endif
 }
-
-//mode.read();
-//encoder_sw.read();
-//encoder.read();
-//
-//if(mode.check_button_hold()) {
-//  Serial.println("mode hold");
-//}
-//
-//if(mode.check_button_click()) {
-//  Serial.println("mode click");
-//  encoder.enable = !encoder.enable;
-//  if (encoder.enable)
-//    Serial.println(" ------------ Encoder On ------------ ");
-//    else
-//      Serial.println(" ------------ Encoder Off ------------ ");
-//      }
-//
-//if(encoder_sw.check_button_hold()) {
-//  Serial.println("encoder hold");
-//}
-//
-//if(encoder_sw.check_button_click()) {
-//  if (!shoulder_active) {
-//    Serial.println(" ------------ Shoulder Counter ------------ ");
-//    encoder.counter = &shoulder_angle;
-//  }
-//  else {
-//    Serial.println(" ------------ Base Counter ------------ ");
-//    encoder.counter = &base_angle;
-//  }
-//  shoulder_active = !shoulder_active;
-//}
-//
-//if (shoulder_active)
-//Serial.println(shoulder_angle.count);
-//else
-//Serial.println(base_angle.count);

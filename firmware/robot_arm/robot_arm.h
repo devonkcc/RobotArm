@@ -39,7 +39,7 @@
 
 // Constants
 #define NUM_MOTORS 5
-#define NUM_ARM_STATES 4
+#define NUM_ARM_STATES 3
 #define NUM_LEDS 6 // 1 virtual LED
 #define NUM_AXIS_LEDS 5
 #define DEFAULT_STEPPER_SPEED 140 // degrees/second
@@ -56,7 +56,6 @@
 enum top_level_state_machine {
   REMOTE,
   KNOB,
-  RECORD,
   PLAY
 };
 
