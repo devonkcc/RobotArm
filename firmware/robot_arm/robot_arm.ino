@@ -74,6 +74,7 @@ void setup() {
   wrist_angle.val = WRIST_STARTUP_POS;
   elbow_angle.val = ELBOW_STARTUP_POS;
   shoulder_angle.val = SHOULDER_STARTUP_POS;
+  shoulder_angle.upper_limit = GRIPPER_UPPER_LIMIT;
   
   // Initialize default encoder counter
   encoder.counter = counter_list[curr_counter];

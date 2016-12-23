@@ -46,10 +46,11 @@
 #define MAX_BASE_ROTATION 720
 
 // Startup servo positions
-#define GRIPPER_STARTUP_POS 144
+#define GRIPPER_STARTUP_POS 100
 #define WRIST_STARTUP_POS 5
 #define ELBOW_STARTUP_POS 180
-#define SHOULDER_STARTUP_POS 135
+#define SHOULDER_STARTUP_POS 50
+#define GRIPPER_UPPER_LIMIT 100
 
 // State Machine
 enum top_level_state_machine {
