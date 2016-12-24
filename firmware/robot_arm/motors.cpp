@@ -71,7 +71,7 @@ void stepper_motor_t::move_abs(float _position) {
   init_stepper_interrupt();
   float delta_position = _position - position;
   position = _position;
-  // Add delta stpes
+  // Add delta steps
   steps_remaining += int(delta_position/BASE_STEP_SIZE)*((clockwise)?-1:1);
   if (steps_remaining < 0) {
     //Reverse direction

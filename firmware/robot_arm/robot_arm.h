@@ -42,15 +42,15 @@
 #define NUM_ARM_STATES 3
 #define NUM_LEDS 6 // 1 virtual LED
 #define NUM_AXIS_LEDS 5
-#define DEFAULT_STEPPER_SPEED 140 // degrees/second
+#define DEFAULT_STEPPER_SPEED 100 // degrees/second
 #define MAX_BASE_ROTATION 720
 
 // Startup servo positions
-#define GRIPPER_STARTUP_POS 100
+#define GRIPPER_STARTUP_POS 15
 #define WRIST_STARTUP_POS 5
 #define ELBOW_STARTUP_POS 180
 #define SHOULDER_STARTUP_POS 50
-#define GRIPPER_UPPER_LIMIT 100
+#define GRIPPER_UPPER_LIMIT 30
 
 // State Machine
 enum top_level_state_machine {
@@ -67,6 +67,9 @@ led_t gripper_led = led_t(GRIPPER_LED, true);
 led_t forearm_led = led_t(FOREARM_LED, true);
 led_t upper_arm_led = led_t(UPPER_LED, true);
 led_t base_led = led_t(BASE_LED, false);
+
+// LED single shot timeout
+long led_single_shot_timout = 0;
 
 // Non axis LEDs must be stored at the end of the led_list
 // There are two gripper LEDs on pupose because the gripper_led is solid when
@@ -103,7 +106,7 @@ Servo shoulder_servo1;
 Servo shoulder_servo2;
 
 // Motors objects
-servo_motor_t gripper = servo_motor_t(GRIPPER_PWM, &gripper_servo, 1, 0,
+servo_motor_t gripper = servo_motor_t(GRIPPER_PWM, &gripper_servo, 1, -75,
                                       SMALL_SERVO_SPEED);
 servo_motor_t wrist = servo_motor_t(WRIST_PWM, &wrist_servo, 1, 0,
                                     SMALL_SERVO_SPEED);
@@ -116,6 +119,7 @@ servo_motor_t shoulder2 = servo_motor_t(SHOULDER_PWM2, &shoulder_servo2, -1, 180
 stepper_motor_t base = stepper_motor_t(DIR, STEP, ENABLE);
 
 servo_motor_t* servo_list[5] = {&gripper, &wrist, &elbow, &shoulder1, &shoulder2};
+
 
 // Write to motors flag
 bool write_to_motors = false; 

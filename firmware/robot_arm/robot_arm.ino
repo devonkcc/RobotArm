@@ -84,13 +84,13 @@ void setup() {
   base_angle.step_size = 1;
   base_angle.val = MAX_BASE_ROTATION/2;
   base_angle.upper_limit = MAX_BASE_ROTATION;
-
+  
   // Configure startup servo positions
   gripper_angle.val = GRIPPER_STARTUP_POS;
   wrist_angle.val = WRIST_STARTUP_POS;
   elbow_angle.val = ELBOW_STARTUP_POS;
   shoulder_angle.val = SHOULDER_STARTUP_POS;
-  shoulder_angle.upper_limit = GRIPPER_UPPER_LIMIT;
+  gripper_angle.upper_limit = GRIPPER_UPPER_LIMIT;
   
   // Initialize default encoder counter
   encoder.counter = counter_list[curr_counter];
@@ -132,14 +132,16 @@ void loop() {
     case KNOB:
       write_to_motors = true;
       encoder.enable = true;
+      if (millis() > led_single_shot_timout) show_active_axis_led();
       // Check for swap axis
       if (encoder_sw.check_button_click()) {
         curr_counter = (curr_counter+1)%NUM_MOTORS;
         encoder.counter = counter_list[curr_counter];
-        show_active_axis_led();
       }
       // Check for log position
       if (encoder_sw.check_button_hold()) {
+        write_all_axis_leds(SOLID);
+        led_single_shot_timout = millis() + 200;
         coordinate_t new_coordinate;
         new_coordinate.gripper_pos = gripper_angle.val;
         new_coordinate.wrist_pos = wrist_angle.val;
