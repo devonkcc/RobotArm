@@ -11,7 +11,7 @@
 #ifndef __BUTTON__
 #define __BUTTON__
 
-#define TIME_FOR_BUTTON_HOLD 1500
+#define TIME_FOR_BUTTON_HOLD 1000
 
 typedef enum button_state {
   PRESS,

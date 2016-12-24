@@ -91,6 +91,7 @@ void setup() {
   elbow_angle.val = ELBOW_STARTUP_POS;
   shoulder_angle.val = SHOULDER_STARTUP_POS;
   gripper_angle.upper_limit = GRIPPER_UPPER_LIMIT;
+  elbow_angle.upper_limit = ELBOW_UPPER_LIMIT;
   
   // Initialize default encoder counter
   encoder.counter = counter_list[curr_counter];
@@ -212,7 +213,19 @@ void loop() {
   
   // Write to motors
   if (write_to_motors) {
-    gripper.move_abs(gripper_angle.val);
+    if (gripper_open && gripper_angle.val > 20) {
+      gripper.move_abs(30);
+      gripper_timeout = millis() + 300;
+      gripper_open = false;
+    }
+    else if (!gripper_open && gripper_angle.val < 10) {
+      gripper.move_abs(0);
+      gripper_timeout = millis() + 300;
+      gripper_open = true;
+    }
+    if (millis() > gripper_timeout) {
+      gripper.move_abs(15);
+    }
     wrist.move_abs(wrist_angle.val);
     elbow.move_abs(elbow_angle.val);
     shoulder1.move_abs(shoulder_angle.val);

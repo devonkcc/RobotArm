@@ -47,10 +47,11 @@
 
 // Startup servo positions
 #define GRIPPER_STARTUP_POS 15
-#define WRIST_STARTUP_POS 5
-#define ELBOW_STARTUP_POS 180
+#define WRIST_STARTUP_POS 90
+#define ELBOW_STARTUP_POS 150
 #define SHOULDER_STARTUP_POS 50
 #define GRIPPER_UPPER_LIMIT 30
+#define ELBOW_UPPER_LIMIT 150
 
 // State Machine
 enum top_level_state_machine {
@@ -114,12 +115,15 @@ servo_motor_t elbow = servo_motor_t(ELBOW_PWM, &elbow_servo, 1, 0,
                                     LARGE_SERVO_SPEED);
 servo_motor_t shoulder1 = servo_motor_t(SHOULDER_PWM1, &shoulder_servo1, 1, 0,
                                         LARGE_SERVO_SPEED);
-servo_motor_t shoulder2 = servo_motor_t(SHOULDER_PWM2, &shoulder_servo2, -1, 180,
+servo_motor_t shoulder2 = servo_motor_t(SHOULDER_PWM2, &shoulder_servo2, -1, 177,
                                         LARGE_SERVO_SPEED);
 stepper_motor_t base = stepper_motor_t(DIR, STEP, ENABLE);
 
 servo_motor_t* servo_list[5] = {&gripper, &wrist, &elbow, &shoulder1, &shoulder2};
 
+// Gripper specific vars
+bool gripper_open = true;
+long gripper_timeout = 0; 
 
 // Write to motors flag
 bool write_to_motors = false; 
